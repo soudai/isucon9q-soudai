@@ -13,7 +13,9 @@ module Isucari
 
     use StackProf::Middleware, enabled: true,
         mode: :cpu,
-        interval: 1000,
+        raw: true,
+        out: 'tmp/stackprof-cpu-sample_raw.dump',
+        interval: 100,
         save_every: 5
     DEFAULT_PAYMENT_SERVICE_URL = 'http://localhost:5555'
     DEFAULT_SHIPMENT_SERVICE_URL = 'http://localhost:7000'
