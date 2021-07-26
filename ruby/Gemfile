@@ -1,6 +1,8 @@
 source 'https://rubygems.org'
 
 gem 'newrelic_rpm'
+gem 'stackprof'
+gem 'stackprof-webnav'
 gem 'puma'
 gem 'sinatra'
 gem 'mysql2'

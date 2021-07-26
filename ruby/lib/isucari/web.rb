@@ -6,9 +6,15 @@ require 'mysql2'
 require 'mysql2-cs-bind'
 require 'bcrypt'
 require 'isucari/api'
+require 'stackprof'
 
 module Isucari
   class Web < Sinatra::Base
+
+    use StackProf::Middleware, enabled: true,
+        mode: :cpu,
+        interval: 1000,
+        save_every: 5
     DEFAULT_PAYMENT_SERVICE_URL = 'http://localhost:5555'
     DEFAULT_SHIPMENT_SERVICE_URL = 'http://localhost:7000'
 
