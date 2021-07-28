@@ -342,8 +342,8 @@ module Isucari
             " `buyer_stats`.`account_name` AS `buyer_name`, " \
             " `buyer_stats`.`num_sell_items` AS `buyer_num_sell_items` " \
             " FROM `items`" \
-            "    INNER JOIN `user_stats`                  ON `user_stats`.`user_id` = `items`.`seller_id`" \
-            "    LEFT JOIN  `user_stats` AS `buyer_stats` ON `buyer_stats`.`user_id` = `items`.`buyer_id` " \
+            "    INNER JOIN `users` ON `users`.`id` = `items`.`seller_id`" \
+            "    LEFT JOIN `users` AS `buyer_stats` ON `buyer_stats`.`id` = `items`.`buyer_id`" \
             "WHERE `items`.`seller_id` = ? AND `items`.`status` IN (?, ?, ?, ?, ?)" \
             "    AND (`items`.`created_at` < ? OR (`items`.`created_at` <= ? AND `id` < ?)) " \
             "UNION " \
@@ -352,11 +352,11 @@ module Isucari
             " `buyer_stats`.`account_name` AS `buyer_name`, " \
             " `buyer_stats`.`num_sell_items` AS `buyer_num_sell_items` " \
             " FROM `items`" \
-            "    INNER JOIN `user_stats`                  ON `user_stats`.`user_id` = `items`.`seller_id`" \
-            "    LEFT JOIN  `user_stats` AS `buyer_stats` ON `buyer_stats`.`user_id` = `items`.`buyer_id` " \
+            "    INNER JOIN `users` ON `users`.`id` = `items`.`seller_id`" \
+            "    LEFT JOIN `users` AS `buyer_stats` ON `buyer_stats`.`id` = `items`.`buyer_id` " \
             "WHERE `items`.`buyer_id` = ? AND `items`.`status` IN (?, ?, ?, ?, ?)" \
             "    AND (`items`.`created_at` < ? OR (`items`.`created_at` <= ? AND `id` < ?)) "\
-            "ORDER BY `items`.`created_at` DESC, `items`.`id` DESC LIMIT #{TRANSACTIONS_PER_PAGE + 1}",
+            "ORDER BY `created_at` DESC, `id` DESC LIMIT #{TRANSACTIONS_PER_PAGE + 1}",
             user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP, Time.at(created_at), Time.at(created_at), item_id,
             user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP, Time.at(created_at), Time.at(created_at), item_id
           )
