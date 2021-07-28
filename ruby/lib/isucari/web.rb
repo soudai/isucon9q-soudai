@@ -455,14 +455,14 @@ module Isucari
 
         shipping = shippings[item['id']]
 
-        ssr = begin
-                api_client.shipment_status(get_shipment_service_url, 'reserve_id' => shipping['reserve_id'])
-              rescue
-                db.query('ROLLBACK')
-                halt_with_error 500, 'failed to request to shipment service'
-              end
-        
         if shipping
+          ssr = begin
+                  api_client.shipment_status(get_shipment_service_url, 'reserve_id' => shipping['reserve_id'])
+                rescue
+                  db.query('ROLLBACK')
+                  halt_with_error 500, 'failed to request to shipment service'
+                end
+          
           item_detail['transaction_evidence_id'] = shipping['transaction_evidence_id']
           item_detail['transaction_evidence_status'] = shipping['transaction_evidence_status']
           item_detail['shipping_status'] = ssr['status']
