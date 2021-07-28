@@ -28,7 +28,7 @@ module Isucari
     ITEM_STATUS_TRADING = 'trading'
     ITEM_STATUS_SOLD_OUT = 'sold_out'
     ITEM_STATUS_STOP = 'stop'
-    ITEM_STATUS_CANCEL = 'cancel'
+      ITEM_STATUS_CANCEL = 'cancel'
 
     PAYMENT_SERVICE_ISUCARI_APIKEY = 'a15400e46c83635eb181-946abb51ff26a868317c'
     PAYMENT_SERVICE_ISUCARI_SHOPID = '11'
@@ -336,7 +336,7 @@ module Isucari
       items = if item_id > 0 && created_at > 0
         # paging
         begin
-          db.xquery("SELECT * FROM `items` WHERE `seller_id` = ? AND `status` IN (#{ITEM_STATUS_ON_SALE}, #{ITEM_STATUS_TRADING}, #{ITEM_STATUS_SOLD_OUT}, #{ITEM_STATUS_CANCEL}, #{ITEM_STATUS_STOP}) AND (`created_at` < ?  OR (`created_at` <= ? AND `id` < ?)) UNION SELECT * FROM `items` WHERE `buyer_id` = ? AND `status` IN (#{ITEM_STATUS_ON_SALE}, #{ITEM_STATUS_TRADING}, #{ITEM_STATUS_SOLD_OUT}, #{ITEM_STATUS_CANCEL}, #{ITEM_STATUS_STOP}) AND (`created_at` < ?  OR (`created_at` <= ? AND `id` < ?)) ORDER BY `created_at` DESC, `id` DESC LIMI #{TRANSACTIONS_PER_PAGE + 1}", user['id'], Time.at(created_at), Time.at(created_at), item_id, user['id'], Time.at(created_at), Time.at(created_at), item_id)
+          db.xquery("SELECT * FROM `items` WHERE `seller_id` = ? AND `status` IN (#{ITEM_STATUS_ON_SALE}, #{ITEM_STATUS_TRADING}, #{ITEM_STATUS_SOLD_OUT}, #{ITEM_STATUS_CANCEL}, #{ITEM_STATUS_STOP}) AND (`created_at` < ?  OR (`created_at` <= ? AND `id` < ?)) UNION SELECT * FROM `items` WHERE `buyer_id` = ? AND `status` IN (#{ITEM_STATUS_ON_SALE}, #{ITEM_STATUS_TRADING}, #{ITEM_STATUS_SOLD_OUT}, #{ITEM_STATUS_CANCEL}, #{ITEM_STATUS_STOP}) AND (`created_at` < ?  OR (`created_at` <= ? AND `id` < ?)) ORDER BY `created_at` DESC, `id` DESC LIMIT #{TRANSACTIONS_PER_PAGE + 1}", user['id'], Time.at(created_at), Time.at(created_at), item_id, user['id'], Time.at(created_at), Time.at(created_at), item_id)
         rescue
           db.query('ROLLBACK')
           halt_with_error 500, 'db error'
@@ -344,7 +344,7 @@ module Isucari
       else
         # 1st page
         begin
-          db.xquery("SELECT * FROM `items` WHERE `seller_id` = ? AND `status` IN (#{ITEM_STATUS_ON_SALE}, #{ITEM_STATUS_TRADING}, #{ITEM_STATUS_SOLD_OUT}, #{ITEM_STATUS_CANCEL}, #{ITEM_STATUS_STOP}) UNION SELECT * FROM `items` WHERE `buyer_id` = ? AND `status` IN (#{ITEM_STATUS_ON_SALE}, #{ITEM_STATUS_TRADING}, #{ITEM_STATUS_SOLD_OUT}, #{ITEM_STATUS_CANCEL}, #{ITEM_STATUS_STOP}) ORDER BY `created_at` DESC, `id` DESC LIMIT #{TRANSACTIONS_PER_PAGE + 1}", user['id'] , user['id'])
+          db.xquery("SELECT * FROM `items` WHERE `seller_id` = ? AND `status` IN (#{ITEM_STATUS_ON_SALE}, #{ITEM_STATUS_TRADING}, #{ITEM_STATUS_SOLD_OUT}, #{ITEM_STATUS_CANCEL}, #{ITEM_STATUS_STOP}) UNION SELECT * FROM `items` WHERE `buyer_id` = ? AND `status` IN (#{ITEM_STATUS_ON_SALE}, #{ITEM_STATUS_TRADING}, #{ITEM_STATUS_SOLD_OUT}, #{ITEM_STATUS_CANCEL}, #{ITEM_STATUS_STOP}) ORDER BY `created_at` DESC, `id` DESC LIMIT #{TRANSACTIONS_PER_PAGE + 1}", user['id'], user['id'])
         rescue
           db.query('ROLLBACK')
           halt_with_error 500, 'db error'
