@@ -361,6 +361,7 @@ module Isucari
             user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP, Time.at(created_at), Time.at(created_at), item_id
           )
         rescue
+          puts e.full_message
           db.query('ROLLBACK')
           halt_with_error 500, 'db error'
         end
@@ -390,13 +391,18 @@ module Isucari
             user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP
           )
         rescue
+          puts e.full_message
           db.query('ROLLBACK')
           halt_with_error 500, 'db error'
         end
       end
 
       item_details = items.map do |item|
-        seller = get_user_simple_by_id(item['seller_id'])
+        seller = {
+          'id' => item['seller_id'],
+          'account_name' => item['account_name'],
+          'num_sell_items' => item['num_sell_items']
+        }
         if seller.nil?
           db.query('ROLLBACK')
           halt_with_error 404, 'seller not found'
