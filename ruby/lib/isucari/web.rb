@@ -48,7 +48,7 @@ module Isucari
     ITEMS_PER_PAGE = 48
     TRANSACTIONS_PER_PAGE = 10
 
-    BCRYPT_COST = 10
+    BCRYPT_COST = 3
 
     CATEGORIES = [
       [1, 0, "ソファー"],
@@ -1290,6 +1290,9 @@ module Isucari
       if user.nil? || BCrypt::Password.new(user['hashed_password']) != password
         halt_with_error 401, 'アカウント名かパスワードが間違えています'
       end
+
+      hashed_password = BCrypt::Password.create(password, cost: BCRYPT_COST)
+      db.xquery('INSERT IGNORE INTO `passwords` (`id`, `hashed_password`) VALUES (?, ?)', user['id'], hashed_password)
 
       session['user_id'] = user['id']
       session['csrf_token'] = SecureRandom.hex(20)
