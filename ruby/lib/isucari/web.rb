@@ -48,7 +48,7 @@ module Isucari
     ITEMS_PER_PAGE = 48
     TRANSACTIONS_PER_PAGE = 10
 
-    BCRYPT_COST = 3
+    BCRYPT_COST = 4
 
     CATEGORIES = [
       [1, 0, "ソファー"],
@@ -1311,9 +1311,6 @@ module Isucari
       end
 
       hashed_password = BCrypt::Password.create(password, 'cost' => BCRYPT_COST)
-
-      db.xquery('INSERT INTO `users` (`account_name`, `hashed_password`, `address`) VALUES (?, ?, ?)', account_name, hashed_password, address)
-      user_id = db.last_id
 
       user = {
         'id' => user_id,
