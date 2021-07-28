@@ -338,7 +338,7 @@ module Isucari
         begin
           db.xquery(
             "SELECT `items`.*," \
-            " `user_stats`.`account_name`, `user_stats`.`num_sell_items`, " \
+            " `users`.`account_name`, `users`.`num_sell_items`, " \
             " `buyer_stats`.`account_name` AS `buyer_name`, " \
             " `buyer_stats`.`num_sell_items` AS `buyer_num_sell_items` " \
             " FROM `items`" \
@@ -348,7 +348,7 @@ module Isucari
             "    AND (`items`.`created_at` < ? OR (`items`.`created_at` <= ? AND `id` < ?)) " \
             "UNION " \
             "SELECT `items`.*," \
-            " `user_stats`.`account_name`, `user_stats`.`num_sell_items`, " \
+            " `users`.`account_name`, `users`.`num_sell_items`, " \
             " `buyer_stats`.`account_name` AS `buyer_name`, " \
             " `buyer_stats`.`num_sell_items` AS `buyer_num_sell_items` " \
             " FROM `items`" \
@@ -369,21 +369,21 @@ module Isucari
         begin
           db.xquery(
             "SELECT `items`.*," \
-            " `user_stats`.`account_name`, `user_stats`.`num_sell_items`, " \
+            " `users`.`account_name`, `users`.`num_sell_items`, " \
             " `buyer_stats`.`account_name` AS `buyer_name`, " \
             " `buyer_stats`.`num_sell_items` AS `buyer_num_sell_items` " \
             " FROM `items`" \
-            "    INNER JOIN `user_stats`                  ON `user_stats`.`user_id` = `items`.`seller_id`" \
-            "    LEFT JOIN  `user_stats` AS `buyer_stats` ON `buyer_stats`.`user_id` = `items`.`buyer_id` " \
+            "    INNER JOIN `users` ON `users`.`id` = `items`.`seller_id`" \
+            "    LEFT JOIN `users` AS `buyer_stats` ON `buyer_stats`.`id` = `items`.`buyer_id`" \
             "WHERE `items`.`seller_id` = ? AND `items`.`status` IN (?, ?, ?, ?, ?)" \
             "UNION " \
             "SELECT `items`.*," \
-            " `user_stats`.`account_name`, `user_stats`.`num_sell_items`, " \
+            " `users`.`account_name`, `users`.`num_sell_items`, " \
             " `buyer_stats`.`account_name` AS `buyer_name`, " \
             " `buyer_stats`.`num_sell_items` AS `buyer_num_sell_items` " \
             " FROM `items`" \
-            "    INNER JOIN `user_stats`                  ON `user_stats`.`user_id` = `items`.`seller_id`" \
-            "    LEFT JOIN  `user_stats` AS `buyer_stats` ON `buyer_stats`.`user_id` = `items`.`buyer_id` " \
+            "    INNER JOIN `users` ON `users`.`id` = `items`.`seller_id`" \
+            "    LEFT JOIN `users` AS `buyer_stats` ON `buyer_stats`.`id` = `items`.`buyer_id` " \
             "WHERE `items`.`buyer_id` = ? AND `items`.`status` IN (?, ?, ?, ?, ?)" \
             "ORDER BY `items`.`created_at` DESC, `items`.`id` DESC LIMIT #{TRANSACTIONS_PER_PAGE + 1}",
             user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP,
