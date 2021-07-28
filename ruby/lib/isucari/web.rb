@@ -49,10 +49,73 @@ module Isucari
 
     BCRYPT_COST = 10
 
+    CATEGORIES = [
+      [1, 0, "ソファー"],
+      [2, 1, "一人掛けソファー"],
+      [3, 1, "二人掛けソファー"],
+      [4, 1, "コーナーソファー"],
+      [5, 1, "二段ソファー"],
+      [6, 1, "ソファーベッド"],
+      [10,  0, "家庭用チェア"],
+      [11, 10, "スツール"],
+      [12, 10, "クッションスツール"],
+      [13, 10, "ダイニングチェア"],
+      [14, 10, "リビングチェア"],
+      [15, 10, "カウンターチェア"],
+      [20,  0, "キッズチェア"],
+      [21, 20, "学習チェア"],
+      [22, 20, "ベビーソファ"],
+      [23, 20, "キッズハイチェア"],
+      [24, 20, "テーブルチェア"],
+      [30,  0, "オフィスチェア"],
+      [31, 30, "デスクチェア"],
+      [32, 30, "ビジネスチェア"],
+      [33, 30, "回転チェア"],
+      [34, 30, "リクライニングチェア"],
+      [35, 30, "投擲用椅子"],
+      [40, 0, "折りたたみ椅子"],
+      [41, 40, "パイプ椅子"],
+      [42, 40, "木製折りたたみ椅子"],
+      [43, 40, "キッチンチェア"],
+      [44, 40, "アウトドアチェア"],
+      [45, 40, "作業椅子"],
+      [50,  0, "ベンチ"],
+      [51, 50, "一人掛けベンチ"],
+      [52, 50, "二人掛けベンチ"],
+      [53, 50, "アウトドア用ベンチ"],
+      [54, 50, "収納付きベンチ"],
+      [55, 50, "背もたれ付きベンチ"],
+      [56, 50, "ベンチマーク"],
+      [60,  0, "座椅子"],
+      [61, 60, "和風座椅子"],
+      [62, 60, "高座椅子"],
+      [63, 60, "ゲーミング座椅子"],
+      [64, 60, "ロッキングチェア"],
+      [65, 60, "座布団"],
+      [66, 60, "空気椅子"]
+    ]
+
     configure :development do
       require 'sinatra/reloader'
       register Sinatra::Reloader
     end
+
+    category_data = {}
+    category_children_ids = {}
+    CATEGORIES.each do |category|
+      category_data[category[0]] = {
+        'id' => category[0],
+        'parent_id' => category[1],
+        'category_name' => category[2]
+      }
+      if category[1] != 0
+        category_data[category[0]]['parent_category_name'] = category_data[category[1]]['category_name']
+        category_children_ids[category[1]] = [] unless category_children_ids[category[1]]
+        category_children_ids[category[1]] << category[0]
+      end
+    end
+    set :categories, category_data
+    set :category_children, category_children_ids
 
     set :add_charset, ['application/json']
     set :public_folder, File.join(__dir__, '..', '..', 'public')
@@ -100,24 +163,7 @@ module Isucari
       end
 
       def get_category_by_id(category_id)
-        category = db.xquery('SELECT * FROM `categories` WHERE `id` = ?', category_id).first
-
-        return if category.nil?
-
-        parent_category_name = if category['parent_id'] != 0
-          parent_category = get_category_by_id(category['parent_id'])
-
-          return if parent_category.nil?
-
-          parent_category['category_name']
-        end
-
-        {
-          'id' => category['id'],
-          'parent_id' => category['parent_id'],
-          'category_name' => category['category_name'],
-          'parent_category_name' => parent_category_name
-        }
+        settings.categories[category_id]
       end
 
       def get_config_by_name(name)
