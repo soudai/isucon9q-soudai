@@ -175,11 +175,11 @@ module Isucari
       end
 
       def get_payment_service_url
-        get_config_by_name('payment_service_url') || DEFAULT_PAYMENT_SERVICE_URL
+        DEFAULT_PAYMENT_SERVICE_URL
       end
 
       def get_shipment_service_url
-        get_config_by_name('shipment_service_url') || DEFAULT_SHIPMENT_SERVICE_URL
+        DEFAULT_SHIPMENT_SERVICE_URL
       end
 
       def get_image_url(image_name)
@@ -407,7 +407,7 @@ module Isucari
       ).map do |row|
         [row['item_id'], row]
       end.to_h
-
+      
       item_details = items.map do |item|
         seller = {
           'id' => item['seller_id'],
@@ -462,7 +462,7 @@ module Isucari
                   db.query('ROLLBACK')
                   halt_with_error 500, 'failed to request to shipment service'
                 end
-          
+
           item_detail['transaction_evidence_id'] = shipping['transaction_evidence_id']
           item_detail['transaction_evidence_status'] = shipping['transaction_evidence_status']
           item_detail['shipping_status'] = ssr['status']
@@ -1246,8 +1246,7 @@ module Isucari
       response['user'] = user unless user.nil?
       response['payment_service_url'] = get_payment_service_url
 
-      categories = db.xquery('SELECT * FROM `categories`').to_a
-      response['categories'] = categories
+      response['categories'] = settings.categories
 
       response.to_json
     end
