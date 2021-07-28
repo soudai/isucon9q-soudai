@@ -345,7 +345,7 @@ module Isucari
             "    INNER JOIN `users` ON `users`.`id` = `items`.`seller_id`" \
             "    LEFT JOIN `users` AS `buyer_stats` ON `buyer_stats`.`id` = `items`.`buyer_id`" \
             "WHERE `items`.`seller_id` = ? AND `items`.`status` IN (?, ?, ?, ?, ?)" \
-            "    AND (`items`.`created_at` < ? OR (`items`.`created_at` <= ? AND `id` < ?)) " \
+            "    AND (`items`.`created_at` < ? OR (`items`.`created_at` <= ? AND `items`.`id` < ?)) " \
             "UNION " \
             "SELECT `items`.*," \
             " `users`.`account_name`, `users`.`num_sell_items`, " \
@@ -355,7 +355,7 @@ module Isucari
             "    INNER JOIN `users` ON `users`.`id` = `items`.`seller_id`" \
             "    LEFT JOIN `users` AS `buyer_stats` ON `buyer_stats`.`id` = `items`.`buyer_id` " \
             "WHERE `items`.`buyer_id` = ? AND `items`.`status` IN (?, ?, ?, ?, ?)" \
-            "    AND (`items`.`created_at` < ? OR (`items`.`created_at` <= ? AND `id` < ?)) "\
+            "    AND (`items`.`created_at` < ? OR (`items`.`created_at` <= ? AND `items`.`id` < ?)) "\
             "ORDER BY `created_at` DESC, `id` DESC LIMIT #{TRANSACTIONS_PER_PAGE + 1}",
             user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP, Time.at(created_at), Time.at(created_at), item_id,
             user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP, Time.at(created_at), Time.at(created_at), item_id
