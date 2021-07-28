@@ -336,7 +336,7 @@ module Isucari
       items = if item_id > 0 && created_at > 0
         # paging
         begin
-          db.xquery("SELECT * FROM `items` WHERE (`seller_id` = ? OR `buyer_id` = ?) AND `status` IN (?, ?, ?, ?, ?) AND (`created_at` < ?  OR (`created_at` <= ? AND `id` < ?)) ORDER BY `created_at` DESC, `id` DESC LIMIT #{TRANSACTIONS_PER_PAGE + 1}", user['id'], user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP, Time.at(created_at), Time.at(created_at), item_id)
+            db.xquery("SELECT * FROM `items` WHERE `seller_id` = ? AND `status` IN (?, ?, ?, ?, ?) AND (`created_at` < ?  OR (`created_at` <= ? AND `id` < ?)) UNION SELECT * FROM `items` WHERE `buyer_id` = ? AND `status` IN (?, ?, ?, ?, ?) AND (`created_at` < ?  OR (`created_at` <= ? AND `id` < ?)) ORDER BY `created_at` DESC, `id` #{TRANSACTIONS_PER_PAGE + 1}", user['id'], user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP, Time.at(created_at), Time.at(created_at), item_id)
         rescue
           db.query('ROLLBACK')
           halt_with_error 500, 'db error'
@@ -344,7 +344,7 @@ module Isucari
       else
         # 1st page
         begin
-          db.xquery("SELECT * FROM `items` WHERE (`seller_id` = ? OR `buyer_id` = ?) AND `status` IN (?, ?, ?, ?, ?) ORDER BY `created_at` DESC, `id` DESC LIMIT #{TRANSACTIONS_PER_PAGE + 1}", user['id'], user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP)
+          db.xquery("SELECT * FROM `items` WHERE `seller_id` = ? AND `status` IN (?, ?, ?, ?, ?) UNION SELECT * FROM `items` WHERE `buyer_id` = ? AND `status` IN (?, ?, ?, ?, ?) ORDER BY `created_at` DESC, `id` DESC LIMIT #{TRANSACTIONS_PER_PAGE + 1}", user['id'], user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP)
         rescue
           db.query('ROLLBACK')
           halt_with_error 500, 'db error'
