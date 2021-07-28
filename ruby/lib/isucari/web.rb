@@ -28,7 +28,7 @@ module Isucari
     ITEM_STATUS_TRADING = 'trading'
     ITEM_STATUS_SOLD_OUT = 'sold_out'
     ITEM_STATUS_STOP = 'stop'
-      ITEM_STATUS_CANCEL = 'cancel'
+    ITEM_STATUS_CANCEL = 'cancel'
 
     PAYMENT_SERVICE_ISUCARI_APIKEY = 'a15400e46c83635eb181-946abb51ff26a868317c'
     PAYMENT_SERVICE_ISUCARI_SHOPID = '11'
@@ -56,18 +56,18 @@ module Isucari
       [4, 1, "コーナーソファー"],
       [5, 1, "二段ソファー"],
       [6, 1, "ソファーベッド"],
-      [10,  0, "家庭用チェア"],
+      [10, 0, "家庭用チェア"],
       [11, 10, "スツール"],
       [12, 10, "クッションスツール"],
       [13, 10, "ダイニングチェア"],
       [14, 10, "リビングチェア"],
       [15, 10, "カウンターチェア"],
-      [20,  0, "キッズチェア"],
+      [20, 0, "キッズチェア"],
       [21, 20, "学習チェア"],
       [22, 20, "ベビーソファ"],
       [23, 20, "キッズハイチェア"],
       [24, 20, "テーブルチェア"],
-      [30,  0, "オフィスチェア"],
+      [30, 0, "オフィスチェア"],
       [31, 30, "デスクチェア"],
       [32, 30, "ビジネスチェア"],
       [33, 30, "回転チェア"],
@@ -79,14 +79,14 @@ module Isucari
       [43, 40, "キッチンチェア"],
       [44, 40, "アウトドアチェア"],
       [45, 40, "作業椅子"],
-      [50,  0, "ベンチ"],
+      [50, 0, "ベンチ"],
       [51, 50, "一人掛けベンチ"],
       [52, 50, "二人掛けベンチ"],
       [53, 50, "アウトドア用ベンチ"],
       [54, 50, "収納付きベンチ"],
       [55, 50, "背もたれ付きベンチ"],
       [56, 50, "ベンチマーク"],
-      [60,  0, "座椅子"],
+      [60, 0, "座椅子"],
       [61, 60, "和風座椅子"],
       [62, 60, "高座椅子"],
       [63, 60, "ゲーミング座椅子"],
@@ -227,12 +227,12 @@ module Isucari
       created_at = params['created_at'].to_i
 
       items = if item_id > 0 && created_at > 0
-        # paging
-        db.xquery("SELECT * FROM `items` WHERE `status` IN (?, ?) AND (`created_at` < ?  OR (`created_at` <= ? AND `id` < ?)) ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", ITEM_STATUS_ON_SALE, ITEM_STATUS_SOLD_OUT, Time.at(created_at), Time.at(created_at), item_id)
-      else
-        # 1st page
-        db.xquery("SELECT * FROM `items` WHERE `status` IN (?, ?) ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", ITEM_STATUS_ON_SALE, ITEM_STATUS_SOLD_OUT)
-      end
+                # paging
+                db.xquery("SELECT * FROM `items` WHERE `status` IN (?, ?) AND (`created_at` < ?  OR (`created_at` <= ? AND `id` < ?)) ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", ITEM_STATUS_ON_SALE, ITEM_STATUS_SOLD_OUT, Time.at(created_at), Time.at(created_at), item_id)
+              else
+                # 1st page
+                db.xquery("SELECT * FROM `items` WHERE `status` IN (?, ?) ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", ITEM_STATUS_ON_SALE, ITEM_STATUS_SOLD_OUT)
+              end
 
       item_simples = items.map do |item|
         seller = get_user_simple_by_id(item['seller_id'])
@@ -283,10 +283,10 @@ module Isucari
       created_at = params['created_at'].to_i
 
       items = if item_id > 0 && created_at > 0
-        db.xquery("SELECT * FROM `items` WHERE `status` IN (?, ?) AND category_id IN (?) AND (`created_at` < ?  OR (`created_at` <= ? AND `id` < ?)) ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", ITEM_STATUS_ON_SALE, ITEM_STATUS_SOLD_OUT, category_ids, Time.at(created_at), Time.at(created_at), item_id)
-      else
-        db.xquery("SELECT * FROM `items` WHERE `status` IN (?,?) AND category_id IN (?) ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", ITEM_STATUS_ON_SALE, ITEM_STATUS_SOLD_OUT, category_ids)
-      end
+                db.xquery("SELECT * FROM `items` WHERE `status` IN (?, ?) AND category_id IN (?) AND (`created_at` < ?  OR (`created_at` <= ? AND `id` < ?)) ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", ITEM_STATUS_ON_SALE, ITEM_STATUS_SOLD_OUT, category_ids, Time.at(created_at), Time.at(created_at), item_id)
+              else
+                db.xquery("SELECT * FROM `items` WHERE `status` IN (?,?) AND category_id IN (?) ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", ITEM_STATUS_ON_SALE, ITEM_STATUS_SOLD_OUT, category_ids)
+              end
 
       item_simples = items.map do |item|
         seller = get_user_simple_by_id(item['seller_id'])
@@ -334,10 +334,10 @@ module Isucari
 
       db.query('BEGIN')
       items = if item_id > 0 && created_at > 0
-        # paging
-        begin
-          db.xquery(
-            "SELECT `items`.*," \
+                # paging
+                begin
+                  db.xquery(
+                    "SELECT `items`.*," \
             " `users`.`account_name`, `users`.`num_sell_items`, " \
             " `buyer_stats`.`account_name` AS `buyer_name`, " \
             " `buyer_stats`.`num_sell_items` AS `buyer_num_sell_items` " \
@@ -357,18 +357,18 @@ module Isucari
             "WHERE `items`.`buyer_id` = ? AND `items`.`status` IN (?, ?, ?, ?, ?)" \
             "    AND (`items`.`created_at` < ? OR (`items`.`created_at` <= ? AND `items`.`id` < ?)) "\
             "ORDER BY `created_at` DESC, `id` DESC LIMIT #{TRANSACTIONS_PER_PAGE + 1}",
-            user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP, Time.at(created_at), Time.at(created_at), item_id,
-            user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP, Time.at(created_at), Time.at(created_at), item_id
-          )
-        rescue
-          db.query('ROLLBACK')
-          halt_with_error 500, 'db error 2'
-        end
-      else
-        # 1st page
-        begin
-          db.xquery(
-            "SELECT `items`.*," \
+                    user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP, Time.at(created_at), Time.at(created_at), item_id,
+                    user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP, Time.at(created_at), Time.at(created_at), item_id
+                  )
+                rescue
+                  db.query('ROLLBACK')
+                  halt_with_error 500, 'db error 2'
+                end
+              else
+                # 1st page
+                begin
+                  db.xquery(
+                    "SELECT `items`.*," \
             " `users`.`account_name`, `users`.`num_sell_items`, " \
             " `buyer_stats`.`account_name` AS `buyer_name`, " \
             " `buyer_stats`.`num_sell_items` AS `buyer_num_sell_items` " \
@@ -386,14 +386,14 @@ module Isucari
             "    LEFT JOIN `users` AS `buyer_stats` ON `buyer_stats`.`id` = `items`.`buyer_id` " \
             "WHERE `items`.`buyer_id` = ? AND `items`.`status` IN (?, ?, ?, ?, ?)" \
             "ORDER BY `created_at` DESC, `id` DESC LIMIT #{TRANSACTIONS_PER_PAGE + 1}",
-            user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP,
-            user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP
-          )
-        rescue
-          db.query('ROLLBACK')
-          halt_with_error 500, 'db error 1'
-        end
-      end
+                    user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP,
+                    user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP
+                  )
+                rescue
+                  db.query('ROLLBACK')
+                  halt_with_error 500, 'db error 1'
+                end
+              end
 
       shippings = db.xquery(
         "SELECT " \
@@ -403,13 +403,13 @@ module Isucari
         "  , `shippings`.`reserve_id`" \
         "FROM `transaction_evidences` " \
         "INNER JOIN `shippings` ON `shippings`.`transaction_evidence_id` = `transaction_evidences`.`id` " \
-        "WHERE `transaction_evidences`.`item_id` IN (#{items.map{ |_| _['id'] }.join(', ')})"
+        "WHERE `transaction_evidences`.`item_id` IN (#{items.map { |_| _['id'] }.join(', ')})"
       ).map do |row|
         [row['item_id'], row]
       end.to_h
 
       ssrs = begin
-               api_client.bulk_shipment_status(get_shipment_service_url, shippings.each_value.map { |_|  _['reserve_id'] })
+               api_client.bulk_shipment_status(get_shipment_service_url, shippings.each_value.map { |_| _['reserve_id'] })
              rescue
                db.query('ROLLBACK')
                halt_with_error 500, 'failed to request to shipment service'
@@ -500,12 +500,12 @@ module Isucari
       created_at = params['created_at'].to_i
 
       items = if item_id > 0 && created_at > 0
-        # paging
-        db.xquery("SELECT * FROM `items` WHERE `seller_id` = ? AND `status` IN (?, ?, ?) AND `created_at` <= ? AND `id` < ? ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", user_simple['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, Time.at(created_at), item_id)
-      else
-        # 1st page
-        db.xquery("SELECT * FROM `items` WHERE `seller_id` = ? AND `status` IN (?, ?, ?) ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", user_simple['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT)
-      end
+                # paging
+                db.xquery("SELECT * FROM `items` WHERE `seller_id` = ? AND `status` IN (?, ?, ?) AND `created_at` <= ? AND `id` < ? ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", user_simple['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, Time.at(created_at), item_id)
+              else
+                # 1st page
+                db.xquery("SELECT * FROM `items` WHERE `seller_id` = ? AND `status` IN (?, ?, ?) ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", user_simple['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT)
+              end
 
       item_simples = items.map do |item|
         seller = get_user_simple_by_id(item['seller_id'])
@@ -1012,7 +1012,6 @@ module Isucari
         db.query('ROLLBACK')
         halt_with_error 500, 'db error'
       end
-
 
       db.query('COMMIT')
 
