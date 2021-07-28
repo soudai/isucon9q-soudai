@@ -361,7 +361,6 @@ module Isucari
             user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP, Time.at(created_at), Time.at(created_at), item_id
           )
         rescue
-          puts e.full_message
           db.query('ROLLBACK')
           halt_with_error 500, 'db error'
         end
@@ -391,7 +390,6 @@ module Isucari
             user['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT, ITEM_STATUS_CANCEL, ITEM_STATUS_STOP
           )
         rescue
-          puts e.full_message
           db.query('ROLLBACK')
           halt_with_error 500, 'db error'
         end
