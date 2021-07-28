@@ -395,6 +395,26 @@ module Isucari
         end
       end
 
+      shippings = db.xquery(
+        "SELECT " \
+        "  `transaction_evidences`.`item_id`" \
+        "  , `transaction_evidences`.`id` as `transaction_evidence_id`" \
+        "  , `transaction_evidences`.`status` as `transaction_evidence_status`" \
+        "  , `shippings`.`reserve_id`" \
+        "FROM `transaction_evidences` " \
+        "INNER JOIN `shippings` ON `shippings`.`transaction_evidence_id` = `transaction_evidences`.`id` " \
+        "WHERE `transaction_evidences`.`item_id` IN (#{items.map{ |_| _['id'] }.join(', ')})"
+      ).map do |row|
+        [row['item_id'], row]
+      end.to_h
+
+      ssrs = begin
+               api_client.bulk_shipment_status(get_shipment_service_url, shippings.each_value.map { |_|  _['reserve_id'] })
+             rescue
+               db.query('ROLLBACK')
+               halt_with_error 500, 'failed to request to shipment service'
+             end
+
       item_details = items.map do |item|
         seller = {
           'id' => item['seller_id'],
@@ -432,33 +452,19 @@ module Isucari
         }
 
         if item['buyer_id'] != 0
-          buyer = get_user_simple_by_id(item['buyer_id'])
-          if buyer.nil?
-            db.query('ROLLBACK')
-            halt_with_error 404, 'buyer not found'
-          end
-
           item_detail['buyer_id'] = item['buyer_id']
-          item_detail['buyer'] = buyer
+          item_detail['buyer'] = {
+            'id' => item['buyer_id'],
+            'account_name' => item['buyer_name'],
+            'num_sell_items' => item['buyer_num_sell_items']
+          }
         end
 
-        transaction_evidence = db.xquery('SELECT * FROM `transaction_evidences` WHERE `item_id` = ?', item['id']).first
-        unless transaction_evidence.nil?
-          shipping = db.xquery('SELECT * FROM `shippings` WHERE `transaction_evidence_id` = ?', transaction_evidence['id']).first
-          if shipping.nil?
-            db.query('ROLLBACK')
-            halt_with_error 404, 'shipping not found'
-          end
-
-          ssr = begin
-            api_client.shipment_status(get_shipment_service_url, 'reserve_id' => shipping['reserve_id'])
-          rescue
-            db.query('ROLLBACK')
-            halt_with_error 500, 'failed to request to shipment service'
-          end
-
-          item_detail['transaction_evidence_id'] = transaction_evidence['id']
-          item_detail['transaction_evidence_status'] = transaction_evidence['status']
+        shipping = shippings[item['id']]
+        if shipping
+          ssr = ssrs.fetch shipping['reserve_id']
+          item_detail['transaction_evidence_id'] = shipping['transaction_evidence_id']
+          item_detail['transaction_evidence_status'] = shipping['transaction_evidence_status']
           item_detail['shipping_status'] = ssr['status']
         end
 
@@ -1298,7 +1304,7 @@ module Isucari
     # getReports
     get '/reports.json' do
       transaction_evidences = db.xquery('SELECT * FROM `transaction_evidences` WHERE `id` > 15007')
-      
+
       response = transaction_evidences.map do |transaction_evidence|
         {
           'id' => transaction_evidence['id'],
