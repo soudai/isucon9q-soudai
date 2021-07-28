@@ -1246,7 +1246,12 @@ module Isucari
       response['user'] = user unless user.nil?
       response['payment_service_url'] = get_payment_service_url
 
-      response['categories'] = settings.categories
+      categories = settings.categories.map do |_, category|
+        cat = category.dup
+        cat.delete('parent_category_name')
+        cat
+      end
+      response['categories'] = categories
 
       response.to_json
     end
