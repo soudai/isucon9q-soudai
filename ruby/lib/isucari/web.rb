@@ -362,7 +362,7 @@ module Isucari
           )
         rescue
           db.query('ROLLBACK')
-          halt_with_error 500, 'db error'
+          halt_with_error 500, 'db error 2'
         end
       else
         # 1st page
@@ -391,7 +391,7 @@ module Isucari
           )
         rescue
           db.query('ROLLBACK')
-          halt_with_error 500, 'db error'
+          halt_with_error 500, 'db error 1'
         end
       end
 
