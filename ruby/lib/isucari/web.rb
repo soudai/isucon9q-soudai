@@ -1,23 +1,14 @@
 require 'json'
 require 'securerandom'
 require 'sinatra/base'
-require 'newrelic_rpm'
 require 'mysql2'
 require 'mysql2-cs-bind'
 require 'bcrypt'
 require 'isucari/api'
-require 'stackprof'
 require 'expeditor'
 
 module Isucari
   class Web < Sinatra::Base
-
-    use StackProf::Middleware, enabled: true,
-        mode: :cpu,
-        raw: true,
-        out: 'tmp/stackprof-cpu-sample_raw.dump',
-        interval: 100,
-        save_every: 5
     DEFAULT_PAYMENT_SERVICE_URL = 'http://localhost:5555'
     DEFAULT_SHIPMENT_SERVICE_URL = 'http://localhost:7000'
 
@@ -105,7 +96,7 @@ module Isucari
     )
 
 
-    configure :development do
+    configure :production do
       require 'sinatra/reloader'
       register Sinatra::Reloader
     end
