@@ -408,13 +408,6 @@ module Isucari
         [row['item_id'], row]
       end.to_h
 
-      ssrs = begin
-               api_client.bulk_shipment_status(get_shipment_service_url, shippings.each_value.map { |_| _['reserve_id'] })
-             rescue
-               db.query('ROLLBACK')
-               halt_with_error 500, 'failed to request to shipment service'
-             end
-
       item_details = items.map do |item|
         seller = {
           'id' => item['seller_id'],
@@ -461,8 +454,15 @@ module Isucari
         end
 
         shipping = shippings[item['id']]
+
+        ssr = begin
+                api_client.shipment_status(get_shipment_service_url, 'reserve_id' => shipping['reserve_id'])
+              rescue
+                db.query('ROLLBACK')
+                halt_with_error 500, 'failed to request to shipment service'
+              end
+        
         if shipping
-          ssr = ssrs.fetch shipping['reserve_id']
           item_detail['transaction_evidence_id'] = shipping['transaction_evidence_id']
           item_detail['transaction_evidence_status'] = shipping['transaction_evidence_status']
           item_detail['shipping_status'] = ssr['status']
