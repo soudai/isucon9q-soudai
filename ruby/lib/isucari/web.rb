@@ -9,8 +9,8 @@ require 'expeditor'
 
 module Isucari
   class Web < Sinatra::Base
-    DEFAULT_PAYMENT_SERVICE_URL = 'http://18.176.228.223:5555'
-    DEFAULT_SHIPMENT_SERVICE_URL = 'http://18.176.228.223:7000'
+    DEFAULT_PAYMENT_SERVICE_URL = 'http://localhost:5555'
+    DEFAULT_SHIPMENT_SERVICE_URL = 'http://localhost:7000'
 
     ITEM_MIN_PRICE = 100
     ITEM_MAX_PRICE = 1000000
