@@ -9,8 +9,8 @@ require 'expeditor'
 
 module Isucari
   class Web < Sinatra::Base
-    DEFAULT_PAYMENT_SERVICE_URL = 'http://18.176.228.223:5555'
-    DEFAULT_SHIPMENT_SERVICE_URL = 'http://18.176.228.223:7000'
+    DEFAULT_PAYMENT_SERVICE_URL = 'http://localhost:5555'
+    DEFAULT_SHIPMENT_SERVICE_URL = 'http://localhost:7000'
 
     ITEM_MIN_PRICE = 100
     ITEM_MAX_PRICE = 1000000
@@ -163,6 +163,22 @@ module Isucari
         }
       end
 
+      def get_user_simple_by_ids(user_ids)
+        return [] if user_ids.empty?
+        users = db.xquery("SELECT * FROM `users` WHERE `id` IN (#{user_ids.join(',')})").to_a
+
+        return if users.nil?
+
+        response = users.map do |user|
+          {
+            'id' => user['id'],
+            'account_name' => user['account_name'],
+            'num_sell_items' => user['num_sell_items']
+          }
+        end
+        response.group_by { |u| u['id'] }
+      end
+
       def get_category_by_id(category_id)
         settings.categories[category_id]
       end
@@ -235,8 +251,11 @@ module Isucari
                 db.xquery("SELECT * FROM `items` WHERE `status` IN (?, ?) ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", ITEM_STATUS_ON_SALE, ITEM_STATUS_SOLD_OUT)
               end
 
+      seller_ids = items.map { |i| i['seller_id'] }
+      sellers = get_user_simple_by_ids(seller_ids)
+
       item_simples = items.map do |item|
-        seller = get_user_simple_by_id(item['seller_id'])
+        seller = sellers[item['seller_id']]&.first
         halt_with_error 404, 'seller not found' if seller.nil?
 
         category = get_category_by_id(item['category_id'])
@@ -289,8 +308,11 @@ module Isucari
                 db.xquery("SELECT * FROM `items` WHERE `status` IN (?,?) AND category_id IN (?) ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", ITEM_STATUS_ON_SALE, ITEM_STATUS_SOLD_OUT, category_ids)
               end
 
+      seller_ids = items.map { |i| i['seller_id'] }
+      sellers = get_user_simple_by_ids(seller_ids)
+
       item_simples = items.map do |item|
-        seller = get_user_simple_by_id(item['seller_id'])
+        seller = sellers[item['seller_id']]&.first
         halt_with_error 404, 'seller not found' if seller.nil?
 
         category = get_category_by_id(item['category_id'])
@@ -508,8 +530,11 @@ module Isucari
                 db.xquery("SELECT * FROM `items` WHERE `seller_id` = ? AND `status` IN (?, ?, ?) ORDER BY `created_at` DESC, `id` DESC LIMIT #{ITEMS_PER_PAGE + 1}", user_simple['id'], ITEM_STATUS_ON_SALE, ITEM_STATUS_TRADING, ITEM_STATUS_SOLD_OUT)
               end
 
+      seller_ids = items.map { |i| i['seller_id'] }
+      sellers = get_user_simple_by_ids(seller_ids)
+
       item_simples = items.map do |item|
-        seller = get_user_simple_by_id(item['seller_id'])
+        seller = sellers[item['seller_id']]&.first
         halt_with_error 404, 'seller not found' if seller.nil?
 
         category = get_category_by_id(item['category_id'])
